@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Page Not Found · Darren Dias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0C0C0C;
+      --white:   #FFFFFF;
+      --orange:  #FF5520;
+      --display: 'Syne', sans-serif;
+      --mono:    'JetBrains Mono', monospace;
+      --nums:    'Space Grotesk', sans-serif;
+    }
+
+    body {
+      background-color: var(--black);
+      background-image: radial-gradient(circle, rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 28px 28px;
+      color: var(--white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      font-family: var(--display);
+    }
+
+    /* ── entrance ── */
+    @keyframes up {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .err-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* ── DD logo mark ── */
+    .dd-mark {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(56px, 10vw, 92px);
+      color: var(--orange);
+      line-height: 1;
+      letter-spacing: 0;
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 14px;
+      opacity: 0;
+      animation: up 0.75s cubic-bezier(0.16,1,0.3,1) 0.1s forwards;
+    }
+    .d-flip {
+      display: inline-block;
+      transform: scaleX(-1);
+      margin-right: -0.08em;
+    }
+
+    /* ── sad line ──────────────────────────────────────────────────
+       Smirk:  M 5 11 Q 155 24 225 3  → control bows DOWN  = ∪ smile
+       Frown:  M 10 20 Q 115  2 220 24 → control bows UP   = ∩ sad
+       Right endpoint (y=24) droops 4 units lower than left (y=20)
+       — the asymmetric droop is what makes it read as sad, not just flat.
+    ─────────────────────────────────────────────────────────────── */
+    .err-frown {
+      display: block;
+      margin-bottom: 56px;
+      opacity: 0;
+      animation: up 0.7s cubic-bezier(0.16,1,0.3,1) 0.55s forwards;
+    }
+
+    /* ── 404 ── */
+    .err-code {
+      font-family: var(--nums);
+      font-size: clamp(80px, 16vw, 160px);
+      font-weight: 700;
+      color: var(--orange);
+      letter-spacing: -5px;
+      line-height: 0.9;
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: up 0.65s cubic-bezier(0.16,1,0.3,1) 0.85s forwards;
+    }
+
+    /* ── heading ── */
+    .err-title {
+      font-family: var(--display);
+      font-size: clamp(20px, 3vw, 32px);
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.8px;
+      margin-bottom: 14px;
+      opacity: 0;
+      animation: up 0.6s cubic-bezier(0.16,1,0.3,1) 1.05s forwards;
+    }
+
+    /* ── subtext ── */
+    .err-sub {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.32);
+      letter-spacing: 0.4px;
+      line-height: 1.8;
+      margin-bottom: 52px;
+      max-width: 320px;
+      opacity: 0;
+      animation: up 0.6s ease 1.25s forwards;
+    }
+
+    /* ── back link ── */
+    .err-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--orange);
+      text-decoration: none;
+      border: 1px solid rgba(255,85,32,0.3);
+      padding: 13px 30px;
+      border-radius: 2px;
+      transition: border-color 0.2s, gap 0.2s;
+      opacity: 0;
+      animation: up 0.6s ease 1.45s forwards;
+    }
+    .err-back:hover { border-color: var(--orange); gap: 16px; }
+    .err-arrow { transition: transform 0.2s; }
+    .err-back:hover .err-arrow { transform: translateX(-4px); }
+
+    /* ── quiet footer ── */
+    .err-footer {
+      position: fixed;
+      bottom: 20px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: rgba(255,255,255,0.12);
+      letter-spacing: 1px;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="err-wrap">
+
+    <!-- DD logo — same mark as portfolio and navbar -->
+    <div class="dd-mark" aria-label="Darren Dias">
+      <span class="d-flip">D</span><span>D</span>
+    </div>
+
+    <!-- sad line — inverted smirk, right side droops -->
+    <svg class="err-frown" width="230" height="44" viewBox="0 0 230 44"
+         fill="none" aria-hidden="true">
+      <path d="M 10 30 Q 115 3 220 40"
+            stroke="rgba(255,255,255,0.36)" stroke-width="2.5"
+            stroke-linecap="round"/>
+    </svg>
+
+    <p  class="err-code">404</p>
+    <h1 class="err-title">page not found.</h1>
+    <p  class="err-sub">even great portfolios have the occasional wrong turn.<br>this one's ours.</p>
+
+    <a href="index.html" class="err-back">
+      <span class="err-arrow">←</span> take me home
+    </a>
+
+  </div>
+
+  <p class="err-footer">darrendias.github.io</p>
+
+</body>
+</html>
