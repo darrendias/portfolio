@@ -511,26 +511,19 @@
     .hero-reveal-outer.is-hovering .hero-shadow-svg { opacity: 1; }
     /* top layer: samurai — clip-path(evenodd) punches a hole at cursor, revealing layers below */
     .hero-portrait-over {
-      background: url('darren-masked.jpg') center 80% / cover no-repeat;
+      background: url('darren-masked.jpg') center 240% / cover no-repeat;
       z-index: 3;
       will-change: clip-path;
     }
-    /* wavy reveal ring — SVG path traces the organic boundary */
+    /* wavy reveal ring — 3 paths above samurai (z-index 10) */
     .reveal-ring-svg {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       pointer-events: none; overflow: visible;
       z-index: 10;
-      opacity: 0;
-      transition: opacity .35s ease;
+      opacity: 0; transition: opacity .35s ease;
     }
     .hero-reveal-outer.is-hovering .reveal-ring-svg { opacity: 1; }
-    #revealRingPath {
-      fill: none;
-      stroke: rgba(255, 85, 32, 0.55);
-      stroke-width: 1.5px;
-      filter: drop-shadow(0 0 4px rgba(255,85,32,0.4));
-    }
 
     /* ── overlay UI (not tilted) ── */
     .hero-ov {
@@ -1763,25 +1756,48 @@
         <div class="hero-tilt-scene" id="heroTiltScene">
           <!-- layer 1 (bottom): professional / revealed state -->
           <div class="hero-portrait hero-portrait-under" id="heroPortraitUnder"></div>
-          <!-- layer 2 (middle): thick blurred stroke on the wavy path = shadow that follows the boundary -->
+          <!-- layer 2: inner char shadow — wide blurred dark stroke straddles boundary.
+               Inside half (below samurai clip) = dark feather on suit side.
+               Outside half = covered by samurai. Creates depth from boundary inward. -->
           <svg class="hero-shadow-svg" id="heroShadowSvg" aria-hidden="true">
             <defs>
-              <filter id="shadow-blur" x="-60%" y="-60%" width="220%" height="220%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="14"/>
+              <filter id="shadow-blur" x="-80%" y="-80%" width="260%" height="260%">
+                <feGaussianBlur id="shadowBlurSd" in="SourceGraphic" stdDeviation="22"/>
               </filter>
             </defs>
-            <path id="heroShadowPath"
-                  fill="none"
-                  stroke="rgba(0,0,0,0.88)"
-                  stroke-width="52"
+            <path id="heroShadowPath" fill="none"
+                  stroke="rgba(0,0,0,0.70)" stroke-width="70"
                   filter="url(#shadow-blur)"/>
           </svg>
           <!-- layer 3 (top): samurai — clip-path punches hole at cursor, revealing layers below -->
           <div class="hero-portrait hero-portrait-over" id="heroPortraitOver"></div>
         </div>
-        <!-- organic orange ring traces the wavy reveal boundary -->
+        <!-- 4-layer premium ring — sits above samurai (z-index 10):
+             1. Dark outer aura   → weight + separation from samurai
+             2. Orange energy glow → brand energy at the cut
+             3. Crisp orange ring → the exact burning edge               -->
         <svg class="reveal-ring-svg" id="revealRingSvg" aria-hidden="true">
-          <path id="revealRingPath"/>
+          <defs>
+            <!-- outer aura: very soft, wide — dark energy into samurai side -->
+            <filter id="outer-aura-blur" x="-100%" y="-100%" width="300%" height="300%">
+              <feGaussianBlur id="outerAuraBlurSd" in="SourceGraphic" stdDeviation="18"/>
+            </filter>
+            <!-- orange glow: medium — burning energy just wider than the ring -->
+            <filter id="orange-glow-blur" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur id="orangeGlowBlurSd" in="SourceGraphic" stdDeviation="7"/>
+            </filter>
+          </defs>
+          <!-- dark outer aura: grounds the boundary, pushes samurai back -->
+          <path id="revealDarkAura"  fill="none"
+                stroke="rgba(0,0,0,0.44)" stroke-width="50"
+                filter="url(#outer-aura-blur)"/>
+          <!-- orange energy glow: brand energy spreading from the cut -->
+          <path id="revealOrangeGlow" fill="none"
+                stroke="rgba(255,85,32,0.52)" stroke-width="12"
+                filter="url(#orange-glow-blur)"/>
+          <!-- crisp cutting edge: the exact burning line -->
+          <path id="revealRingPath"   fill="none"
+                stroke="rgba(255,105,45,0.92)" stroke-width="1.2"/>
         </svg>
       </div>
 
@@ -3010,6 +3026,8 @@
       var scene      = document.getElementById('heroTiltScene');
       var over       = document.getElementById('heroPortraitOver');
       var shadowPath = document.getElementById('heroShadowPath');
+      var darkAura   = document.getElementById('revealDarkAura');
+      var orangeGlow = document.getElementById('revealOrangeGlow');
       var ringPath   = document.getElementById('revealRingPath');
       if (!outer || !scene || !over) return;
 
@@ -3017,13 +3035,57 @@
       var tx = 0, ty = 0, tr = 0;
       var ctX = 0, ctY = 0, ttX = 0, ttY = 0;
       var waveT    = 0;
-      var REVEAL_R = 240;
+      var REVEAL_R = 240;   /* updated dynamically below */
       var TILT_DEG = 12;
 
-      /* ── global flag: set window._heroRevealWavy = false in DevTools console
-            to freeze the reveal as a perfect circle for eye-position calibration.
-            Set back to true (or any truthy value) to restore the wavy effect.   */
-      window._heroRevealWavy = true;
+      /* ── calibration mode: disable waves for eye-position matching ──────
+         THREE ways to use this:
+         1. Press  W  anywhere on the page — toggles wavy ↔ circle instantly
+         2. Add  ?calibrate  to the URL — loads with waves off permanently
+         3. Console: type  _heroRevealWavy = false  then hover the portrait
+         ─────────────────────────────────────────────────────────────────── */
+      window._heroRevealWavy   = !location.search.includes('calibrate');
+      window._heroRevealShadow = true;  /* S — shadow/glow layers */
+      window._heroRevealRing   = true;  /* E — orange outline ring */
+
+      document.addEventListener('keydown', function(e) {
+        if (!e.metaKey && !e.ctrlKey && !e.altKey) {
+          if (e.key === 'w' || e.key === 'W') window._heroRevealWavy   = !window._heroRevealWavy;
+          if (e.key === 's' || e.key === 'S') window._heroRevealShadow = !window._heroRevealShadow;
+          if (e.key === 'e' || e.key === 'E') window._heroRevealRing   = !window._heroRevealRing;
+        }
+      });
+
+      /* ── dynamic reveal radius + proportional SVG scaling ────────────────
+         REVEAL_R = 40% of container width — always proportional to portrait.
+         Ring stroke widths and blur values also scale so the ring looks the
+         same weight relative to the portrait at every breakpoint.             */
+      function updateRevealR() {
+        var w = outer.getBoundingClientRect().width;
+        var s = Math.min(1, w / 601);   /* scale relative to 601px design base */
+        REVEAL_R = Math.round(w * 0.40);
+        /* scale inner shadow */
+        if (shadowPath) {
+          shadowPath.setAttribute('stroke-width', Math.round(70 * s));
+          var sd = document.getElementById('shadowBlurSd');
+          if (sd) sd.setAttribute('stdDeviation', (22 * s).toFixed(1));
+        }
+        /* scale outer dark aura */
+        if (darkAura) {
+          darkAura.setAttribute('stroke-width', Math.round(50 * s));
+          var oa = document.getElementById('outerAuraBlurSd');
+          if (oa) oa.setAttribute('stdDeviation', (18 * s).toFixed(1));
+        }
+        /* scale orange glow */
+        if (orangeGlow) {
+          orangeGlow.setAttribute('stroke-width', Math.round(12 * s));
+          var og = document.getElementById('orangeGlowBlurSd');
+          if (og) og.setAttribute('stdDeviation', (7 * s).toFixed(1));
+        }
+        if (ringPath) ringPath.setAttribute('stroke-width', (1.2 * Math.max(0.6, s)).toFixed(2));
+      }
+      updateRevealR();
+      window.addEventListener('resize', updateRevealR);
 
       function lerp(a, b, t) { return a + (b - a) * t; }
 
@@ -3047,6 +3109,7 @@
       }
 
       outer.addEventListener('mouseenter', function() {
+        updateRevealR();          /* refresh in case viewport changed since load */
         tr = REVEAL_R; outer.classList.add('is-hovering');
       });
       outer.addEventListener('mouseleave', function() {
@@ -3076,21 +3139,24 @@
           over.style.clipPath       = clipVal;
           over.style.webkitClipPath = clipVal;
 
-          /* shadow: thick blurred stroke drawn ON the wavy path.
-             Half the stroke falls inward (inside the clip hole = visible),
-             half falls outward (covered by samurai = invisible).
-             The blur spreads the stroke into a soft dark halo that is
-             inherently wavy because it lives on the wavy path itself.   */
-          if (shadowPath) shadowPath.setAttribute('d', hole);
-
-          /* orange ring traces the boundary */
-          if (ringPath) ringPath.setAttribute('d', wavyCirclePath(cx, cy, cr + 2, waveT));
+          /* inner char shadow + outer aura + orange glow:
+             suppressed when _heroRevealShadow = false (S key or console)
+             → leaves only the crisp 1.2px ring for clean eye calibration */
+          var showShadow = window._heroRevealShadow !== false;
+          if (shadowPath) shadowPath.setAttribute('d', showShadow ? hole : '');
+          if (darkAura)   darkAura.setAttribute('d',   showShadow ? hole : '');
+          if (orangeGlow) orangeGlow.setAttribute('d', showShadow ? hole : '');
+          /* crisp ring: suppressed by E key for bare-minimum calibration view */
+          if (ringPath)   ringPath.setAttribute('d', window._heroRevealRing !== false ? hole : '');
 
         } else {
           over.style.clipPath       = '';
           over.style.webkitClipPath = '';
-          if (shadowPath) shadowPath.setAttribute('d', '');
-          if (ringPath)   ringPath.setAttribute('d', '');
+          var empty = '';
+          if (shadowPath) shadowPath.setAttribute('d', empty);
+          if (darkAura)   darkAura.setAttribute('d', empty);
+          if (orangeGlow) orangeGlow.setAttribute('d', empty);
+          if (ringPath)   ringPath.setAttribute('d', empty);
         }
 
         scene.style.transform =
