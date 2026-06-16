@@ -1,27 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M 15 2 L 12 2 C 4 2 4 18 12 18 L 15 18 Z' fill='%23FF5520'/><path d='M 17 2 L 20 2 C 28 2 28 18 20 18 L 17 18 Z' fill='%23FF5520'/><path d='M 4 22 Q 20 28 28 20' stroke='%23FF5520' stroke-width='1.5' stroke-linecap='round' fill='none'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <title>404 — Page Not Found · Darren Dias</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@700&display=swap"
+    rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
-      --black:   #0C0C0C;
-      --white:   #FFFFFF;
-      --orange:  #FF5520;
+      --black: #0C0C0C;
+      --white: #FFFFFF;
+      --orange: #FF5520;
       --display: 'Syne', sans-serif;
-      --mono:    'JetBrains Mono', monospace;
-      --nums:    'Space Grotesk', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --nums: 'Space Grotesk', sans-serif;
     }
 
     body {
       background-color: var(--black);
-      background-image: radial-gradient(circle, rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
       background-size: 28px 28px;
       color: var(--white);
       min-height: 100vh;
@@ -35,8 +47,15 @@
 
     /* ── entrance ── */
     @keyframes up {
-      from { opacity: 0; transform: translateY(22px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(22px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .err-wrap {
@@ -58,8 +77,9 @@
       align-items: center;
       margin-bottom: 14px;
       opacity: 0;
-      animation: up 0.75s cubic-bezier(0.16,1,0.3,1) 0.1s forwards;
+      animation: up 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
     }
+
     .d-flip {
       display: inline-block;
       transform: scaleX(-1);
@@ -76,7 +96,7 @@
       display: block;
       margin-bottom: 56px;
       opacity: 0;
-      animation: up 0.7s cubic-bezier(0.16,1,0.3,1) 0.55s forwards;
+      animation: up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards;
     }
 
     /* ── 404 ── */
@@ -89,7 +109,7 @@
       line-height: 0.9;
       margin-bottom: 16px;
       opacity: 0;
-      animation: up 0.65s cubic-bezier(0.16,1,0.3,1) 0.85s forwards;
+      animation: up 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.85s forwards;
     }
 
     /* ── heading ── */
@@ -101,14 +121,14 @@
       letter-spacing: -0.8px;
       margin-bottom: 14px;
       opacity: 0;
-      animation: up 0.6s cubic-bezier(0.16,1,0.3,1) 1.05s forwards;
+      animation: up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.05s forwards;
     }
 
     /* ── subtext ── */
     .err-sub {
       font-family: var(--mono);
       font-size: 11px;
-      color: rgba(255,255,255,0.32);
+      color: rgba(255, 255, 255, 0.32);
       letter-spacing: 0.4px;
       line-height: 1.8;
       margin-bottom: 52px;
@@ -129,16 +149,26 @@
       text-transform: uppercase;
       color: var(--orange);
       text-decoration: none;
-      border: 1px solid rgba(255,85,32,0.3);
+      border: 1px solid rgba(255, 85, 32, 0.3);
       padding: 13px 30px;
       border-radius: 2px;
       transition: border-color 0.2s, gap 0.2s;
       opacity: 0;
       animation: up 0.6s ease 1.45s forwards;
     }
-    .err-back:hover { border-color: var(--orange); gap: 16px; }
-    .err-arrow { transition: transform 0.2s; }
-    .err-back:hover .err-arrow { transform: translateX(-4px); }
+
+    .err-back:hover {
+      border-color: var(--orange);
+      gap: 16px;
+    }
+
+    .err-arrow {
+      transition: transform 0.2s;
+    }
+
+    .err-back:hover .err-arrow {
+      transform: translateX(-4px);
+    }
 
     /* ── quiet footer ── */
     .err-footer {
@@ -146,12 +176,13 @@
       bottom: 20px;
       font-family: var(--mono);
       font-size: 10px;
-      color: rgba(255,255,255,0.12);
+      color: rgba(255, 255, 255, 0.12);
       letter-spacing: 1px;
       user-select: none;
     }
   </style>
 </head>
+
 <body>
 
   <div class="err-wrap">
@@ -162,18 +193,15 @@
     </div>
 
     <!-- sad line — inverted smirk, right side droops -->
-    <svg class="err-frown" width="230" height="44" viewBox="0 0 230 44"
-         fill="none" aria-hidden="true">
-      <path d="M 10 30 Q 115 3 220 40"
-            stroke="rgba(255,255,255,0.36)" stroke-width="2.5"
-            stroke-linecap="round"/>
+    <svg class="err-frown" width="230" height="44" viewBox="0 0 230 44" fill="none" aria-hidden="true">
+      <path d="M 10 30 Q 115 3 220 40" stroke="rgba(255,255,255,0.36)" stroke-width="2.5" stroke-linecap="round" />
     </svg>
 
-    <p  class="err-code">404</p>
+    <p class="err-code">404</p>
     <h1 class="err-title">page not found.</h1>
-    <p  class="err-sub">even great portfolios have the occasional wrong turn.<br>this one's ours.</p>
+    <p class="err-sub">out of everything on this website, you found the one thing that isn't here.</p>
 
-    <a href="index.html" class="err-back">
+    <a href="/portfolio/" class="err-back">
       <span class="err-arrow">←</span> take me home
     </a>
 
@@ -182,4 +210,5 @@
   <p class="err-footer">darrendias.github.io</p>
 
 </body>
+
 </html>
