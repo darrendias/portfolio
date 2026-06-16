@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="64x64" href="favicon-64.png">
   <title>Darren Dias</title>
   <meta name="description"
-    content="Darren Dias grew up in Goa speaking three languages. Now he builds YouTube channels to 100M views, creates AI tools, and writes copy that actually converts." />
+    content="hey! i'm Darren. i help businesses that have something to say, but struggle to say it." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -469,10 +469,17 @@
         /* clear the home indicator: env() = 34px on iPhone 16 Pro Max, fallback 20px */
         bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 12px));
         transform: translateX(-50%) translateY(14px);
+        /* never wider than viewport — 16px margin each side */
+        max-width: calc(100vw - 32px);
       }
 
       #pill-nav.up {
         transform: translateX(-50%) translateY(0);
+      }
+
+      .pill-wrap {
+        /* allow pill to shrink below natural width without overflowing */
+        overflow: hidden;
       }
 
       .pill-icon {
@@ -483,14 +490,28 @@
         display: none;
       }
 
-      /* larger tap target + remove iOS tap highlight and double-tap zoom delay */
+      /* tighter tap target on small screens so all 7 icons + logo fit */
       .pill-btn,
       .pill-logo-btn {
-        padding: 12px 16px;
+        padding: 10px 10px;
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
         -webkit-touch-callout: none;
         user-select: none;
+      }
+    }
+
+    /* very narrow screens: compress further */
+    @media (max-width: 390px) {
+
+      .pill-btn,
+      .pill-logo-btn {
+        padding: 10px 7px;
+      }
+
+      .pill-icon {
+        width: 14px;
+        height: 14px;
       }
     }
 
@@ -758,7 +779,7 @@
       pointer-events: none;
       z-index: 0;
       background-image: radial-gradient(rgba(255, 85, 32, .07) 1px, transparent 1px);
-      background-size: 28px 28px;
+      background-size: 20px 20px;
     }
 
     /* ── portrait reveal container ── */
@@ -1005,6 +1026,11 @@
       color: rgba(255, 255, 255, .16);
       letter-spacing: .12em;
       opacity: 0;
+    }
+
+    /* frosted pill wrapper — only styled on mobile, invisible on desktop */
+    .hero-ov-meta {
+      display: contents;
     }
 
     /* CTA ghost button (magnet pill) */
@@ -1331,12 +1357,65 @@
 
     /* ≤576px: text repositioned for small screens */
     @media (max-width: 576px) {
-      .hero-ov-tl {
-        bottom: 44px;
+
+      /* hero-ov becomes a flex column — tl centred at bottom, bl hidden */
+      .hero-ov {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        padding-bottom: 56px;
+        text-align: center;
       }
 
+      .hero-ov-tl {
+        position: static;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      /* slightly reduced name size — balanced for mobile */
+      .hero-ov-n1,
+      .hero-ov-n2 {
+        font-size: clamp(26px, 7.5vw, 38px);
+      }
+
+      /* frosted glass pill wrapping role + year */
+      .hero-ov-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        margin-top: 10px;
+        padding: 12px 18px 11px;
+        background: rgba(12, 12, 12, 0.55);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 100px;
+      }
+
+      .hero-ov-role {
+        font-size: 10px;
+        margin-bottom: 0;
+        color: rgba(255, 255, 255, .62);
+      }
+
+      .hero-ov-year {
+        font-size: 9px;
+        color: rgba(255, 255, 255, .38);
+      }
+
+      /* hide magBtn visually but keep in DOM so particle JS initialises safely */
       .hero-ov-bl {
-        bottom: 66px;
+        position: absolute;
+        width: 0;
+        height: 0;
+        overflow: hidden;
+        visibility: hidden;
+        pointer-events: none;
       }
     }
 
@@ -1344,27 +1423,6 @@
     @media (max-width: 480px) {
       .hero-scroll-cue {
         display: none;
-      }
-
-      .hero-ov-n1,
-      .hero-ov-n2 {
-        font-size: clamp(18px, 5vw, 24px);
-      }
-
-      .hero-ov-tl {
-        bottom: 44px;
-      }
-
-      .hero-ov-bl {
-        bottom: 66px;
-      }
-
-      #magBtn {
-        padding: 13px 29px;
-        font-size: 12px;
-        font-weight: 600;
-        border-width: 1px;
-        border-radius: 100px;
       }
     }
 
@@ -3263,8 +3321,10 @@
             <span class="hero-ov-n1">DARREN</span>
             <span class="hero-ov-n2">DIAS</span>
           </div>
-          <p class="hero-ov-role">Content Creator · AI Builder</p>
-          <p class="hero-ov-year">PORTFOLIO · 2026</p>
+          <div class="hero-ov-meta">
+            <p class="hero-ov-role">Content Creator · AI Builder</p>
+            <p class="hero-ov-year">PORTFOLIO · 2026</p>
+          </div>
         </div>
 
         <!-- bottom-left: CTAs (magBtn kept for particle system) -->
