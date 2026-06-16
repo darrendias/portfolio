@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+      <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -490,28 +490,15 @@
       position: absolute; inset: 0; width: 100%; height: 100%;
       background-size: cover; background-position: center top;
     }
-    /* PLACEHOLDER under (professional/revealed) —
-       swap: .hero-portrait-under { background-image: url('professional.jpg'); background: none; } */
+    /* bottom layer: suit / professional — revealed by cursor hover */
     .hero-portrait-under {
-      background:
-        radial-gradient(ellipse 55% 45% at 50% 55%, rgba(255,85,32,.25) 0%, transparent 65%),
-        linear-gradient(175deg, #190800 0%, #2d1000 28%, #7a3200 58%, #c24800 82%, #FF5520 100%);
+      background: url('darren-suit.jpg') center top / cover no-repeat;
       z-index: 1;
     }
-    /* PLACEHOLDER over (masked/dark) —
-       swap: .hero-portrait-over { background-image: url('masked.jpg'); background: none; } */
+    /* top layer: samurai / masked — default visible state; cursor punches hole to reveal suit */
     .hero-portrait-over {
-      background:
-        radial-gradient(ellipse 50% 65% at 50% 38%, rgba(22,16,8,.0) 0%, rgba(8,8,8,.9) 60%),
-        linear-gradient(175deg, #060606 0%, #121212 32%, #1c1c1c 58%, #0a0a0a 100%);
+      background: url('darren-masked.jpg') center top / cover no-repeat;
       z-index: 2;
-    }
-    /* placeholder helper label — delete when real images are in */
-    .hero-portrait-under::after, .hero-portrait-over::after {
-      content: attr(data-swap-label);
-      position: absolute; bottom: 16px; left: 0; right: 0; text-align: center;
-      font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,.18);
-      letter-spacing: .09em; pointer-events: none;
     }
     /* cursor follow ring */
     .reveal-ring {
