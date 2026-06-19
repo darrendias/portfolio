@@ -299,6 +299,7 @@
       top: 20px;
       left: 50%;
       z-index: 1100;
+      width: max-content;
       opacity: 0;
       pointer-events: none;
       transform: translateX(-50%) translateY(-30px) scale(0.85);
@@ -311,6 +312,24 @@
       pointer-events: auto;
       transform: translateX(-50%) translateY(0) scale(1);
       transition: opacity 0.4s ease 0.05s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s;
+    }
+
+    @media (max-width: 768px) {
+      #pill-nav {
+        transform: translateX(-50%) translateY(-30px) scale(0.7);
+      }
+      #pill-nav.up {
+        transform: translateX(-50%) translateY(0) scale(0.85);
+      }
+    }
+
+    @media (max-width: 520px) {
+      #pill-nav {
+        transform: translateX(-50%) translateY(-30px) scale(calc(100vw / 520 * 0.85));
+      }
+      #pill-nav.up {
+        transform: translateX(-50%) translateY(0) scale(calc(100vw / 520 * 0.85));
+      }
     }
 
     .pill-wrap {
@@ -394,10 +413,10 @@
     .pill-btn {
       position: relative;
       z-index: 1;
-      padding: 7px 16px;
+      padding: 9px 24px;
       border-radius: 100px;
       font-family: var(--body);
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 500;
       color: rgba(255, 255, 255, 0.52);
       text-decoration: none;
@@ -548,20 +567,56 @@
       #pill-nav {
         max-width: calc(100vw - 24px);
       }
+    }
 
+    @media (min-width: 428px) and (max-width: 560px) {
       .pill-wrap {
         gap: 6px;
-        padding: 5px 8px;
+        padding: 5px 6px;
       }
 
       .pill-btn,
       .pill-logo-btn {
-        padding: 10px 14px;
+        padding: 10px 10px;
       }
 
       .pill-icon {
         width: 20px;
         height: 20px;
+      }
+    }
+
+    @media (min-width: 561px) and (max-width: 660px) {
+      .pill-wrap {
+        gap: 8px;
+        padding: 6px 8px;
+      }
+
+      .pill-btn,
+      .pill-logo-btn {
+        padding: 11px 11px;
+      }
+
+      .pill-icon {
+        width: 21px;
+        height: 21px;
+      }
+    }
+
+    @media (min-width: 661px) and (max-width: 768px) {
+      .pill-wrap {
+        gap: 10px;
+        padding: 7px 10px;
+      }
+
+      .pill-btn,
+      .pill-logo-btn {
+        padding: 12px 12px;
+      }
+
+      .pill-icon {
+        width: 22px;
+        height: 22px;
       }
     }
       padding: 9px 15px !important;
@@ -1694,7 +1749,7 @@
       flex-wrap: nowrap;
       justify-content: center;
       width: 100%;
-      padding: 0 32px;
+      padding: 0 52px 0 0;
       gap: 8px;
       margin-top: 32px;
     }
@@ -1865,6 +1920,16 @@
         padding-left: 20px;
       }
 
+      .story-scroll-wrap {
+        height: auto;
+      }
+
+      .story-sticky {
+        position: relative;
+        height: auto;
+        padding: 80px 0;
+      }
+
       /* tablet range (769-900px): full content stays, just stacked.
          JS gradient-reveal skips at ≤900px (no scroll-tied effect at this
          width) — force paragraphs fully visible here instead of staying
@@ -1911,6 +1976,13 @@
          paragraph text needing pacing, just five dots lighting up in turn */
       .story-scroll-wrap {
         height: 200vh;
+      }
+
+      .story-sticky {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        padding: 0;
       }
     }
 
@@ -2599,8 +2671,8 @@
     @media (max-width: 560px) {
       .yt-shorts-grid {
         grid-template-columns: 1fr;
-        gap: 16px;
-        padding: 0 12px;
+        gap: 28px;
+        padding: 0 48px;
       }
 
       /* 1-col: each row is exactly one item, so item 5 alone is safe here —
@@ -4670,7 +4742,19 @@
       const tl = wrap.querySelector('.tl');
       const n = rows.length;
 
-      /* scroll-driven dot-by-dot reveal — same logic at every width.
+      if (window.innerWidth <= 900 && window.innerWidth > 560) {
+        /* tablet: reveal all rows once section enters view */
+        const sticky = wrap.querySelector('.story-sticky');
+        if (!sticky || sticky.getBoundingClientRect().top > window.innerHeight) return;
+        rows.forEach((row, i) => {
+          if (!row.classList.contains('tl-lit'))
+            setTimeout(() => row.classList.add('tl-lit'), i * 165);
+        });
+        if (tl) tl.style.setProperty('--tl-h', 'calc(100% - 20px)');
+        return;
+      }
+
+      /* scroll-driven dot-by-dot reveal for desktop and mobile.
          On mobile this runs against the headline-only left column + the
          200vh scroll-wrap (set in CSS), so the h2 holds in place via
          .story-sticky while progress drives each row's reveal in turn.  */
