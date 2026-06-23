@@ -1467,6 +1467,17 @@
         background-position: center bottom;
       }
 
+      /* safety net — see checkHeroCutout() in JS. If the cutout image
+         failed to load, undo the blur/darken and hide the now-empty
+         cutout layer so the suit photo shows clearly on its own again. */
+      #hero.cutout-missing .hero-portrait-under {
+        filter: none;
+      }
+
+      #hero.cutout-missing .hero-portrait-cutout {
+        display: none;
+      }
+
       /* no hover exists on touch, so this layer's clip-path reveal can
          never trigger — it was just permanently covering the suit image
          underneath for no purpose. Hide it; the suit becomes the sole,
@@ -2249,6 +2260,25 @@
       /* above keywords at crossing */
     }
 
+    /* mobile: a 4° cross is too shallow on a narrow screen — the two
+       strips' scrolling text sit close enough to vertical that they read
+       as overlapping/jumbled rather than two clearly separate lines.
+       Doubling the angle gives real visual separation; the wrap needs
+       extra height too, or the steeper strips clip against its edges. */
+    @media (max-width: 576px) {
+      .ticker-x-wrap {
+        height: 140px;
+      }
+
+      .ticker-strip--a {
+        transform: translateY(-50%) rotate(-9deg);
+      }
+
+      .ticker-strip--b {
+        transform: translateY(-50%) rotate(9deg);
+      }
+    }
+
     .ticker-track {
       display: flex;
       width: max-content;
@@ -2545,6 +2575,58 @@
       transition: opacity .4s ease;
     }
 
+    /* mobile-only "tap to reveal" hint — pinned to the top of the overlay,
+       independent of the centred views/likes stats below it. Hidden on
+       desktop: hover already implies interactivity there, and "tap"
+       specifically doesn't apply to a mouse.                            */
+    .yt-tap-hint {
+      display: none;
+    }
+
+    @media (max-width: 576px) {
+      .yt-tap-hint {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        position: absolute;
+        top: 42px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.6);
+        animation: yt-tap-hint-pulse 2.4s ease-in-out infinite;
+      }
+
+      .yt-tap-hint svg {
+        width: 13px;
+        height: 13px;
+        flex-shrink: 0;
+      }
+    }
+
+    @keyframes yt-tap-hint-pulse {
+
+      0%,
+      100% {
+        opacity: 0.55;
+      }
+
+      50% {
+        opacity: 0.95;
+      }
+    }
+
+    @media (max-width: 576px) and (prefers-reduced-motion: reduce) {
+      .yt-tap-hint {
+        animation: none;
+        opacity: 0.8;
+      }
+    }
+
     .yt-card:has(.yt-frame--short):hover .yt-metric-overlay {
       opacity: 0;
       pointer-events: none;
@@ -2558,8 +2640,11 @@
       padding: 18px 0;
     }
 
-    /* views number: orange highlight; likes stays white */
-    .yt-metric-overlay .ov-stat:first-child .ov-val {
+    /* views number: orange highlight; likes stays white.
+       Targets a dedicated class rather than :first-child — the tap-hint
+       label added above is now the literal first child of the overlay,
+       which silently broke a :first-child-based selector here before. */
+    .yt-metric-overlay .ov-stat--views .ov-val {
       color: var(--orange);
     }
 
@@ -3909,7 +3994,13 @@
                   src="https://i.ytimg.com/vi/h7om0uDyUfM/maxresdefault.jpg"
                   onerror="this.src='https://i.ytimg.com/vi/h7om0uDyUfM/hqdefault.jpg'">
                 <div class="yt-metric-overlay" aria-hidden="true">
-                  <div class="ov-stat">
+                  <div class="yt-tap-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.6">
+                      <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
+                      <circle cx="12" cy="12" r="6.5" opacity="0.55" />
+                      <circle cx="12" cy="12" r="10.5" opacity="0.25" />
+                    </svg>Tap to reveal</div>
+                  <div class="ov-stat ov-stat--views">
                     <div class="ov-val">18.4M</div>
                     <div class="ov-lbl">views</div>
                   </div>
@@ -3955,7 +4046,13 @@
                   src="https://i.ytimg.com/vi/NYPxZmM0oBA/maxresdefault.jpg"
                   onerror="this.src='https://i.ytimg.com/vi/NYPxZmM0oBA/hqdefault.jpg'">
                 <div class="yt-metric-overlay" aria-hidden="true">
-                  <div class="ov-stat">
+                  <div class="yt-tap-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.6">
+                      <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
+                      <circle cx="12" cy="12" r="6.5" opacity="0.55" />
+                      <circle cx="12" cy="12" r="10.5" opacity="0.25" />
+                    </svg>Tap to reveal</div>
+                  <div class="ov-stat ov-stat--views">
                     <div class="ov-val">16.1M</div>
                     <div class="ov-lbl">views</div>
                   </div>
@@ -4001,7 +4098,13 @@
                   src="https://i.ytimg.com/vi/vH7zXpCHkjw/maxresdefault.jpg"
                   onerror="this.src='https://i.ytimg.com/vi/vH7zXpCHkjw/hqdefault.jpg'">
                 <div class="yt-metric-overlay" aria-hidden="true">
-                  <div class="ov-stat">
+                  <div class="yt-tap-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.6">
+                      <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
+                      <circle cx="12" cy="12" r="6.5" opacity="0.55" />
+                      <circle cx="12" cy="12" r="10.5" opacity="0.25" />
+                    </svg>Tap to reveal</div>
+                  <div class="ov-stat ov-stat--views">
                     <div class="ov-val">14.3M</div>
                     <div class="ov-lbl">views</div>
                   </div>
@@ -4047,7 +4150,13 @@
                   src="https://i.ytimg.com/vi/fU5ZuziBGOo/maxresdefault.jpg"
                   onerror="this.src='https://i.ytimg.com/vi/fU5ZuziBGOo/hqdefault.jpg'">
                 <div class="yt-metric-overlay" aria-hidden="true">
-                  <div class="ov-stat">
+                  <div class="yt-tap-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.6">
+                      <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
+                      <circle cx="12" cy="12" r="6.5" opacity="0.55" />
+                      <circle cx="12" cy="12" r="10.5" opacity="0.25" />
+                    </svg>Tap to reveal</div>
+                  <div class="ov-stat ov-stat--views">
                     <div class="ov-val">6.8M</div>
                     <div class="ov-lbl">views</div>
                   </div>
@@ -4093,7 +4202,13 @@
                   src="https://i.ytimg.com/vi/Xc0HhZ1Wksw/maxresdefault.jpg"
                   onerror="this.src='https://i.ytimg.com/vi/Xc0HhZ1Wksw/hqdefault.jpg'">
                 <div class="yt-metric-overlay" aria-hidden="true">
-                  <div class="ov-stat">
+                  <div class="yt-tap-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.6">
+                      <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
+                      <circle cx="12" cy="12" r="6.5" opacity="0.55" />
+                      <circle cx="12" cy="12" r="10.5" opacity="0.25" />
+                    </svg>Tap to reveal</div>
+                  <div class="ov-stat ov-stat--views">
                     <div class="ov-val">5.7M</div>
                     <div class="ov-lbl">views</div>
                   </div>
@@ -4139,7 +4254,13 @@
                   src="https://i.ytimg.com/vi/DPNBW8jfGOY/maxresdefault.jpg"
                   onerror="this.src='https://i.ytimg.com/vi/DPNBW8jfGOY/hqdefault.jpg'">
                 <div class="yt-metric-overlay" aria-hidden="true">
-                  <div class="ov-stat">
+                  <div class="yt-tap-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.6">
+                      <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
+                      <circle cx="12" cy="12" r="6.5" opacity="0.55" />
+                      <circle cx="12" cy="12" r="10.5" opacity="0.25" />
+                    </svg>Tap to reveal</div>
+                  <div class="ov-stat ov-stat--views">
                     <div class="ov-val">4.6M</div>
                     <div class="ov-lbl">views</div>
                   </div>
@@ -4185,7 +4306,13 @@
                   src="https://i.ytimg.com/vi/tfnW5cmGkDA/maxresdefault.jpg"
                   onerror="this.src='https://i.ytimg.com/vi/tfnW5cmGkDA/hqdefault.jpg'">
                 <div class="yt-metric-overlay" aria-hidden="true">
-                  <div class="ov-stat">
+                  <div class="yt-tap-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.6">
+                      <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
+                      <circle cx="12" cy="12" r="6.5" opacity="0.55" />
+                      <circle cx="12" cy="12" r="10.5" opacity="0.25" />
+                    </svg>Tap to reveal</div>
+                  <div class="ov-stat ov-stat--views">
                     <div class="ov-val">4M</div>
                     <div class="ov-lbl">views</div>
                   </div>
@@ -4231,7 +4358,13 @@
                   src="https://i.ytimg.com/vi/-nphNzABjbY/maxresdefault.jpg"
                   onerror="this.src='https://i.ytimg.com/vi/-nphNzABjbY/hqdefault.jpg'">
                 <div class="yt-metric-overlay" aria-hidden="true">
-                  <div class="ov-stat">
+                  <div class="yt-tap-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.6">
+                      <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
+                      <circle cx="12" cy="12" r="6.5" opacity="0.55" />
+                      <circle cx="12" cy="12" r="10.5" opacity="0.25" />
+                    </svg>Tap to reveal</div>
+                  <div class="ov-stat ov-stat--views">
                     <div class="ov-val">3.1M</div>
                     <div class="ov-lbl">views</div>
                   </div>
@@ -5441,6 +5574,29 @@
           requestAnimationFrame(tick);
         })();
       })(); /* end initHeroReveal */
+
+      /* ─────────────────────────────────────────────────────────────────
+         MOBILE HERO: CUTOUT LOAD-FAILURE SAFETY NET
+         The depth-parallax effect below depends on darren-suit-cutout.png
+         loading correctly — a third image the rest of the hero doesn't
+         need. CSS background-image has no built-in error handling, so if
+         that file is ever missing/misnamed/blocked, the cutout would
+         silently render as nothing, leaving only the blurred backdrop
+         visible with no sharp subject in front of it. This test-loads the
+         cutout independently and, on failure, adds a class that reverts
+         the mobile hero to the proven single-photo state: blur removed,
+         empty cutout layer hidden.
+         ───────────────────────────────────────────────────────────────── */
+      (function checkHeroCutout() {
+        if (window.innerWidth > 576) return;
+        var hero = document.getElementById('hero');
+        if (!hero) return;
+        var test = new Image();
+        test.onerror = function () {
+          hero.classList.add('cutout-missing');
+        };
+        test.src = 'darren-suit-cutout.png';
+      })();
 
       /* ─────────────────────────────────────────────────────────────────
          MOBILE HERO: SCROLL-TIED DEPTH PARALLAX
