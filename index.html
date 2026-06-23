@@ -619,6 +619,7 @@
         height: 22px;
       }
     }
+    .nav-cta {
       padding: 9px 15px !important;
       background: var(--orange) !important;
       color: var(--white) !important;
@@ -1029,6 +1030,16 @@
     .hero-portrait-under {
       background: url('darren-suit.png') center 40px / auto calc(100% - 40px) no-repeat;
       z-index: 1;
+    }
+
+    /* mobile-only depth-parallax test: sharp cutout, sits above the under
+       layer. Hidden by default — desktop has no use for this yet. Same
+       canvas dimensions as the original photo, so identical background-
+       position/size rules keep it pixel-aligned with the layer beneath it. */
+    .hero-portrait-cutout {
+      background: url('darren-suit-cutout.png') center 40px / auto calc(100% - 40px) no-repeat;
+      z-index: 2;
+      display: none;
     }
 
     /* top layer: samurai — clip-path(evenodd) punches a hole at cursor, revealing layers below */
@@ -1450,11 +1461,35 @@
       .hero-portrait-under {
         background-size: auto 90%;
         background-position: center bottom;
+        /* becomes a soft, dimmed backdrop for the sharp cutout in front of
+           it — the blur reads as depth-of-field, not as a "ghost" of the
+           subject, since the background here is pure near-black to begin
+           with (same trick that makes this layer pair work at all).      */
+        filter: blur(14px) brightness(0.72);
       }
 
-      .hero-portrait-over {
+      .hero-portrait-cutout {
+        display: block;
         background-size: auto 90%;
         background-position: center bottom;
+      }
+
+      /* no hover exists on touch, so this layer's clip-path reveal can
+         never trigger — it was just permanently covering the suit image
+         underneath for no purpose. Hide it; the suit becomes the sole,
+         static mobile hero. */
+      .hero-portrait-over {
+        display: none;
+      }
+
+      /* belt-and-suspenders: the JS guard in initHeroReveal() already
+         skips this module entirely on touch/narrow viewports, so these
+         should never receive path data or the is-hovering class in the
+         first place — but hiding them here too means correctness doesn't
+         depend on JS timing or any webview's hover-media-feature quirks. */
+      .hero-shadow-svg,
+      .reveal-ring-svg {
+        display: none;
       }
     }
 
@@ -1519,6 +1554,77 @@
         overflow: hidden;
         visibility: hidden;
         pointer-events: none;
+      }
+    }
+
+    /* ── mobile hero: ambient premium pass ───────────────────────────
+       Three things: (1) a slow breathing pulse on the orange rim-light
+       already baked into the photo, so the lighting feels alive rather
+       than static; (2) a bottom legibility scrim + warm text-shadow on
+       the name, since role/year already sit on a frosted pill but the
+       name itself was raw text directly on photo pixels with no contrast
+       protection; (3) the name's glow pulses on the same rhythm as the
+       rim-light so the whole hero breathes as one cohesive moment.      */
+    @media (max-width: 576px) {
+      .hero-tilt-scene::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        /* established lighting convention across every hero portrait:
+           rim light hits the viewer's right edge of frame */
+        background: linear-gradient(to right, transparent 40%, rgba(255, 85, 32, 0.4) 100%);
+        mix-blend-mode: screen;
+        animation: hero-rim-breathe 5s ease-in-out infinite;
+      }
+
+      .hero-ov {
+        /* .hero-ov spans the full hero height (inset:0) — the gradient must
+           stay transparent well past the face/torso and only darken the
+           narrow zone the text actually occupies at the very bottom. */
+        background: linear-gradient(to bottom, transparent 0%, transparent 65%, rgba(12, 12, 12, 0.32) 84%, rgba(12, 12, 12, 0.62) 100%);
+      }
+
+      .hero-ov-n1,
+      .hero-ov-n2 {
+        animation: hero-name-glow-breathe 5s ease-in-out infinite;
+      }
+    }
+
+    @keyframes hero-rim-breathe {
+
+      0%,
+      100% {
+        opacity: 0.15;
+      }
+
+      50% {
+        opacity: 0.45;
+      }
+    }
+
+    @keyframes hero-name-glow-breathe {
+
+      0%,
+      100% {
+        text-shadow: 0 2px 20px rgba(0, 0, 0, .85), 0 1px 3px rgba(0, 0, 0, .9), 0 0 24px rgba(255, 85, 32, .16);
+      }
+
+      50% {
+        text-shadow: 0 2px 20px rgba(0, 0, 0, .85), 0 1px 3px rgba(0, 0, 0, .9), 0 0 32px rgba(255, 85, 32, .32);
+      }
+    }
+
+    @media (max-width: 576px) and (prefers-reduced-motion: reduce) {
+      .hero-tilt-scene::after {
+        animation: none;
+        opacity: 0.3;
+      }
+
+      .hero-ov-n1,
+      .hero-ov-n2 {
+        animation: none;
+        text-shadow: 0 2px 20px rgba(0, 0, 0, .85), 0 1px 3px rgba(0, 0, 0, .9), 0 0 28px rgba(255, 85, 32, .22);
       }
     }
 
@@ -3541,6 +3647,12 @@
         <div class="hero-tilt-scene" id="heroTiltScene">
           <!-- layer 1 (bottom): professional / revealed state -->
           <div class="hero-portrait hero-portrait-under" id="heroPortraitUnder"></div>
+          <!-- mobile-only depth-parallax test: sharp subject cutout sitting in front
+               of the (mobile-blurred) full photo above. Same canvas dimensions as the
+               original, so it aligns pixel-for-pixel at rest; only diverges once the
+               two layers are shifted at different rates by the scroll-parallax JS.
+               Hidden on desktop — this layer has no role there. -->
+          <div class="hero-portrait hero-portrait-cutout" id="heroPortraitCutout"></div>
           <!-- layer 2: inner char shadow — wide blurred dark stroke straddles boundary.
                Inside half (below samurai clip) = dark feather on suit side.
                Outside half = covered by samurai. Creates depth from boundary inward. -->
@@ -3629,7 +3741,7 @@
             <div class="imp-ctx">YouTube · zero paid media</div>
           </div>
           <div class="imp-card">
-            <div class="imp-big"><span class="counter" data-target="60" data-suffix="K+">0K+</span></div>
+            <div class="imp-big"><span class="counter" data-target="70" data-suffix="K+">0K+</span></div>
             <div class="imp-label">YouTube Subscribers</div>
             <div class="imp-ctx">Built from zero</div>
           </div>
@@ -3674,18 +3786,18 @@
                   </div>
                   <div class="tl-row">
                     <div class="tl-yr">BSc · First Class</div>
-                    <div class="tl-main">Computer Science</div>
+                    <div class="tl-main">BSc Computer Science</div>
                     <div class="tl-sub">First student to win 2x Student of the Year</div>
                   </div>
                   <div class="tl-row">
                     <div class="tl-yr">MSc · First Class</div>
-                    <div class="tl-main">Digital Marketing</div>
+                    <div class="tl-main">MSc Digital Marketing</div>
                     <div class="tl-sub">Winner of SAS UK Digital Challenge 2025</div>
                   </div>
                   <div class="tl-row">
                     <div class="tl-yr">Industry</div>
                     <div class="tl-main">Content Marketing Lead</div>
-                    <div class="tl-sub">Study abroad · 130M+ views · 60K+ subscribers</div>
+                    <div class="tl-sub">Study abroad · 130M+ views · 70K+ subscribers</div>
                   </div>
                   <div class="tl-row">
                     <div class="tl-yr">Now</div>
@@ -3708,7 +3820,7 @@
         <div class="ticker-track">
           <span class="ticker-item"><span class="ticker-n">100M+</span> organic views <span
               class="ticker-sep">·</span></span>
-          <span class="ticker-item"><span class="ticker-n">50K+</span> YouTube subscribers <span
+          <span class="ticker-item"><span class="ticker-n">70K+</span> YouTube subscribers <span
               class="ticker-sep">·</span></span>
           <span class="ticker-item"><span class="ticker-n">20K+</span> Instagram followers <span
               class="ticker-sep">·</span></span>
@@ -3721,7 +3833,7 @@
           <!-- duplicate set for seamless loop -->
           <span class="ticker-item"><span class="ticker-n">100M+</span> organic views <span
               class="ticker-sep">·</span></span>
-          <span class="ticker-item"><span class="ticker-n">50K+</span> YouTube subscribers <span
+          <span class="ticker-item"><span class="ticker-n">70K+</span> YouTube subscribers <span
               class="ticker-sep">·</span></span>
           <span class="ticker-item"><span class="ticker-n">20K+</span> Instagram followers <span
               class="ticker-sep">·</span></span>
@@ -4270,7 +4382,7 @@
             <p class="work-desc">The brief was 'make videos that generate revenue.' So I worked out why people watch at 2am, what they search before telling anyone, what actually earns a share, and what would make our clients 'Buy Now', not 'Add to Cart'. 100M views later, the budget was still zero. Paid marketing departments hate this trick.</p>
             <div class="work-nums">
               <div>
-                <div class="wn-val">50K+</div>
+                <div class="wn-val">70K+</div>
                 <div class="wn-lbl">Subscribers</div>
               </div>
               <div>
@@ -4762,21 +4874,27 @@
       const scrollable = wrap.offsetHeight - window.innerHeight;
       if (scrollable <= 0) return;
 
-      const hasEntered = wrapRect.top <= window.innerHeight;
       const progress = Math.max(0, Math.min(1, -wrapRect.top / scrollable));
+      /* epsilon, not a literal 0 — landing exactly at rest (e.g. via a nav
+         click's scrollIntoView) can settle a fraction of a pixel past the
+         true boundary due to sub-pixel rounding, which a strict ">0" check
+         would misread as "already scrolled in" and light row/char 0
+         immediately. 0.005 absorbs that noise; it's ~3-7px of real scroll
+         distance, imperceptible once the user is actually scrolling.      */
+      const EPS = 0.005;
 
       /* text gradient — same progress drives both sides simultaneously */
       if (_gradActs) {
         const gradN = _gradActs.length;
         for (let gi = 0; gi < gradN; gi++) {
-          /* binary snap — only after section locks (progress > 0) */
-          _gradActs[gi].style.opacity = (progress > 0 && progress >= gi / gradN) ? '1' : '0';
+          /* binary snap — only after section locks (progress > EPS) */
+          _gradActs[gi].style.opacity = (progress > EPS && progress >= gi / gradN) ? '1' : '0';
         }
       }
 
       let litCount = 0;
       rows.forEach((row, i) => {
-        const isLit = progress > 0 && progress >= i / n;
+        const isLit = progress > EPS && progress >= i / n;
         row.classList.toggle('tl-lit', isLit);
         if (isLit) litCount++;
       });
@@ -5129,7 +5247,7 @@
         });
 
         /* ── dynamic reveal radius + proportional SVG scaling ────────────────
-           REVEAL_R = 40% of container width — always proportional to portrait.
+           REVEAL_R = 34% of container width — always proportional to portrait.
            Ring stroke widths and blur values also scale so the ring looks the
            same weight relative to the portrait at every breakpoint.             */
         /* image aspect ratio for the portrait PNGs (1240÷1640 ≈ 0.756).
@@ -5156,8 +5274,8 @@
           var portraitH = rect.height * bgScale;
           var portraitW = Math.min(rect.width, portraitH * IMG_ASPECT);
           var s = Math.min(1, portraitW / 601);   /* scale vs 601px design base */
-          /* 30% of portrait width — slightly larger than before for a bolder reveal */
-          REVEAL_R = Math.round(portraitW * 0.30);
+          /* 34% of portrait width — slightly larger reveal per request */
+          REVEAL_R = Math.round(portraitW * 0.34);
           /* scale inner shadow */
           if (shadowPath) {
             shadowPath.setAttribute('stroke-width', Math.round(70 * s));
@@ -5257,7 +5375,7 @@
           var bgScale = getPortraitScale(rect);
           var portH = rect.height * bgScale;
           var portW = Math.min(rect.width, portH * IMG_ASPECT);
-          var xPad = Math.round(REVEAL_R * 0.30);   /* ≈50px at desktop */
+          var xPad = Math.round(REVEAL_R * 0.30);   /* ≈55px at desktop */
           var portLeft = Math.max(0, (rect.width - portW) / 2 - xPad);
           var portRight = Math.min(rect.width, portLeft + portW + xPad * 2);
           /* portTop: desktop image starts 40px from hero top (matches background-position center 40px).
@@ -5329,6 +5447,51 @@
           requestAnimationFrame(tick);
         })();
       })(); /* end initHeroReveal */
+
+      /* ─────────────────────────────────────────────────────────────────
+         MOBILE HERO: SCROLL-TIED DEPTH PARALLAX
+         Three things drift at different rates as the user scrolls past
+         the hero: the blurred background photo (slowest), the sharp
+         subject cutout sitting in front of it (fastest — real parallax
+         depth comes from this differential, not from rotating a single
+         flat image), and the text overlay (opposite direction, since
+         it's a separate UI layer rather than part of the photo's depth).
+         Targets elements with no competing transform/animation of their
+         own — see the width/hover guard on initHeroReveal() above for
+         why none of this ever runs on desktop.
+         ───────────────────────────────────────────────────────────────── */
+      (function initHeroMobileParallax() {
+        if (window.innerWidth > 576) return;
+        var hero = document.getElementById('hero');
+        var bg = document.getElementById('heroPortraitUnder');
+        var fg = document.getElementById('heroPortraitCutout');
+        var ov = document.querySelector('#hero .hero-ov');
+        if (!hero || !bg || !fg) return;
+
+        var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduced) return;
+
+        var BG_PX = 10;   /* background photo — moves least, reads as "further back" */
+        var FG_PX = 30;   /* sharp cutout — moves most, reads as "closer to viewer" */
+        var OV_PX = -22;   /* text overlay — separate UI layer, opposite direction */
+        var ticking = false;
+
+        function apply() {
+          var rect = hero.getBoundingClientRect();
+          var heroH = rect.height || window.innerHeight;
+          var progress = Math.max(0, Math.min(1, -rect.top / heroH));
+          bg.style.transform = 'translateY(' + (progress * BG_PX).toFixed(1) + 'px)';
+          fg.style.transform = 'translateY(' + (progress * FG_PX).toFixed(1) + 'px)';
+          if (ov) ov.style.transform = 'translateY(' + (progress * OV_PX).toFixed(1) + 'px)';
+          ticking = false;
+        }
+
+        window.addEventListener('scroll', function () {
+          if (!ticking) { requestAnimationFrame(apply); ticking = true; }
+        }, { passive: true });
+
+        apply();
+      })(); /* end initHeroMobileParallax */
 
       /* ─────────────────────────────────────────────────────────────────
          WORK CARD 3D TILT
