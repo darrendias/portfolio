@@ -162,13 +162,6 @@
       transform-origin: top center;
     }
 
-    body.nav-scrolled #nav {
-      opacity: 0;
-      transform: translateY(-20px) scale(0.9);
-      pointer-events: none;
-      transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
     .nav-logo {
       font-family: var(--display);
       font-size: 17px;
@@ -992,8 +985,8 @@
       }
     }
 
-    /* inner shadow: SVG thick blurred stroke on the wavy path — sits between suit(1) and samurai(3).
-       Half the stroke falls inward (visible through clip hole), half is covered by samurai.
+    /* inner shadow: SVG thick blurred stroke on the wavy path — sits between suit(1) and overlay(3).
+       Half the stroke falls inward (visible through clip hole), half is covered by the overlay.
        feGaussianBlur spreads the stroke into a soft dark halo that is inherently wavy. */
     .hero-shadow-svg {
       position: absolute;
@@ -1042,14 +1035,14 @@
       display: none;
     }
 
-    /* top layer: samurai — clip-path(evenodd) punches a hole at cursor, revealing layers below */
+    /* top layer: AI overlay — clip-path(evenodd) punches a hole at cursor, revealing layers below */
     .hero-portrait-over {
       background: url('darren-masked.png') center 40px / auto calc(100% - 40px) no-repeat;
       z-index: 3;
       will-change: clip-path;
     }
 
-    /* wavy reveal ring — 3 paths above samurai (z-index 10) */
+    /* wavy reveal ring — 3 paths above the overlay (z-index 10) */
     .reveal-ring-svg {
       position: absolute;
       inset: 0;
@@ -1855,7 +1848,7 @@
       flex-wrap: nowrap;
       justify-content: center;
       width: 100%;
-      padding: 0 52px 0 0;
+      padding: 0 62px 0 0;
       gap: 8px;
       margin-top: 32px;
     }
@@ -3654,8 +3647,8 @@
                Hidden on desktop — this layer has no role there. -->
           <div class="hero-portrait hero-portrait-cutout" id="heroPortraitCutout"></div>
           <!-- layer 2: inner char shadow — wide blurred dark stroke straddles boundary.
-               Inside half (below samurai clip) = dark feather on suit side.
-               Outside half = covered by samurai. Creates depth from boundary inward. -->
+               Inside half (below overlay clip) = dark feather on suit side.
+               Outside half = covered by the overlay. Creates depth from boundary inward. -->
           <svg class="hero-shadow-svg" id="heroShadowSvg" aria-hidden="true">
             <defs>
               <filter id="shadow-blur" x="-80%" y="-80%" width="260%" height="260%">
@@ -3665,16 +3658,16 @@
             <path id="heroShadowPath" fill="none" stroke="rgba(0,0,0,0.50)" stroke-width="70"
               filter="url(#shadow-blur)" />
           </svg>
-          <!-- layer 3 (top): samurai — clip-path punches hole at cursor, revealing layers below -->
+          <!-- layer 3 (top): AI overlay — clip-path punches hole at cursor, revealing layers below -->
           <div class="hero-portrait hero-portrait-over" id="heroPortraitOver"></div>
         </div>
-        <!-- 4-layer premium ring — sits above samurai (z-index 10):
-             1. Dark outer aura   → weight + separation from samurai
+        <!-- 4-layer premium ring — sits above the overlay (z-index 10):
+             1. Dark outer aura   → weight + separation from the overlay
              2. Orange energy glow → brand energy at the cut
              3. Crisp orange ring → the exact burning edge               -->
         <svg class="reveal-ring-svg" id="revealRingSvg" aria-hidden="true">
           <defs>
-            <!-- outer aura: very soft, wide — dark energy into samurai side -->
+            <!-- outer aura: very soft, wide — dark energy into the overlay side -->
             <filter id="outer-aura-blur" x="-100%" y="-100%" width="300%" height="300%">
               <feGaussianBlur id="outerAuraBlurSd" in="SourceGraphic" stdDeviation="18" />
             </filter>
@@ -3683,7 +3676,7 @@
               <feGaussianBlur id="orangeGlowBlurSd" in="SourceGraphic" stdDeviation="7" />
             </filter>
           </defs>
-          <!-- dark outer aura: grounds the boundary, pushes samurai back -->
+          <!-- dark outer aura: grounds the boundary, pushes the overlay back -->
           <path id="revealDarkAura" fill="none" stroke="rgba(0,0,0,0.44)" stroke-width="50"
             filter="url(#outer-aura-blur)" />
           <!-- orange energy glow: brand energy spreading from the cut -->
@@ -3917,12 +3910,12 @@
                   onerror="this.src='https://i.ytimg.com/vi/h7om0uDyUfM/hqdefault.jpg'">
                 <div class="yt-metric-overlay" aria-hidden="true">
                   <div class="ov-stat">
-                    <div class="ov-val">17.4M</div>
+                    <div class="ov-val">18.4M</div>
                     <div class="ov-lbl">views</div>
                   </div>
                   <div class="ov-divider"></div>
                   <div class="ov-stat">
-                    <div class="ov-val">156K</div>
+                    <div class="ov-val">163K</div>
                     <div class="ov-lbl">likes</div>
                   </div>
                 </div>
@@ -3940,7 +3933,7 @@
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                       <circle cx="12" cy="12" r="3" />
                     </svg>
-                    <span class="yt-metric-val">17.4M</span>
+                    <span class="yt-metric-val">18.4M</span>
                     <span class="yt-metric-lbl">views</span>
                   </div>
                   <div class="yt-metric">
@@ -3948,7 +3941,7 @@
                       <path
                         d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                     </svg>
-                    <span class="yt-metric-val">156K</span>
+                    <span class="yt-metric-val">163K</span>
                     <span class="yt-metric-lbl">likes</span>
                   </div>
                 </div>
@@ -4009,12 +4002,12 @@
                   onerror="this.src='https://i.ytimg.com/vi/vH7zXpCHkjw/hqdefault.jpg'">
                 <div class="yt-metric-overlay" aria-hidden="true">
                   <div class="ov-stat">
-                    <div class="ov-val">13M</div>
+                    <div class="ov-val">14.3M</div>
                     <div class="ov-lbl">views</div>
                   </div>
                   <div class="ov-divider"></div>
                   <div class="ov-stat">
-                    <div class="ov-val">129K</div>
+                    <div class="ov-val">146K</div>
                     <div class="ov-lbl">likes</div>
                   </div>
                 </div>
@@ -4032,7 +4025,7 @@
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                       <circle cx="12" cy="12" r="3" />
                     </svg>
-                    <span class="yt-metric-val">13M</span>
+                    <span class="yt-metric-val">14.3M</span>
                     <span class="yt-metric-lbl">views</span>
                   </div>
                   <div class="yt-metric">
@@ -4040,7 +4033,7 @@
                       <path
                         d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                     </svg>
-                    <span class="yt-metric-val">129K</span>
+                    <span class="yt-metric-val">146K</span>
                     <span class="yt-metric-lbl">likes</span>
                   </div>
                 </div>
@@ -4371,7 +4364,7 @@
               </div>
               <div>
                 <div class="wn-val">40M+</div>
-                <div class="wn-lbl">Organic views</div>
+                <div class="wn-lbl">Organic Views</div>
               </div>
             </div>
           </article>
@@ -4387,7 +4380,7 @@
               </div>
               <div>
                 <div class="wn-val">100M+</div>
-                <div class="wn-lbl">Organic views</div>
+                <div class="wn-lbl">Organic Views</div>
               </div>
             </div>
           </article>
@@ -4398,12 +4391,12 @@
             <p class="work-desc">Students don't trust agencies. They trust other students. So we recruited 30 student creators already studying abroad, incentivised them based on content performance, and let them post naturally. Campus tours, culture shock, budget breakdowns. No scripts. Just real student-to-student storytelling. Four of our student creators earned more from commissions than from their part-time jobs.</p>
             <div class="work-nums">
               <div>
-                <div class="wn-val">20M+</div>
-                <div class="wn-lbl">Organic views</div>
+                <div class="wn-val">10M+</div>
+                <div class="wn-lbl">Organic Views</div>
               </div>
               <div>
-                <div class="wn-val">212</div>
-                <div class="wn-lbl">Course enrolments</div>
+                <div class="wn-val">10K+</div>
+                <div class="wn-lbl">Organic Leads</div>
               </div>
             </div>
           </article>
@@ -4415,11 +4408,11 @@
             <div class="work-nums">
               <div>
                 <div class="wn-val">10x</div>
-                <div class="wn-lbl">Follower growth</div>
+                <div class="wn-lbl">Follower Growth</div>
               </div>
               <div>
                 <div class="wn-val">5M+</div>
-                <div class="wn-lbl">Organic views</div>
+                <div class="wn-lbl">Organic Views</div>
               </div>
             </div>
           </article>
@@ -5194,10 +5187,11 @@
 
       /* ─────────────────────────────────────────────────────────────────
          HERO PORTRAIT REVEAL + 3D TILT
-         Three stacked layers: suit (bottom) → shadow (middle) → samurai (top).
-         clip-path: path(evenodd) on the samurai layer carves out a wavy hole
-         at the cursor — the evenodd fill rule makes the interior of the hole
-         fall outside the clip, revealing the suit + shadow below.
+         Three stacked layers (desktop): suit (bottom) → shadow (middle) →
+         AI overlay (top). clip-path: path(evenodd) on the overlay layer
+         carves out a wavy hole at the cursor — the evenodd fill rule makes
+         the interior of the hole fall outside the clip, revealing the
+         suit + shadow below.
          No SVG mask reference needed — pure CSS clip-path, no ID resolution issues.
       ───────────────────────────────────────────────────────────────── */
       (function initHeroReveal() {
@@ -5434,7 +5428,7 @@
           }
 
           /* ring SVG must receive the same transform as the tilt-scene.
-             The clip-path hole lives in the samurai's pre-transform local space.
+             The clip-path hole lives in the overlay's pre-transform local space.
              After scale(1.12) and rotateX/Y, the hole's VISUAL position shifts
              outward by 12% from centre.  Without the same transform the ring
              stays at flat cursor coordinates → ring appears inside the hole.
