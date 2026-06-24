@@ -2575,36 +2575,44 @@
       transition: opacity .4s ease;
     }
 
-    /* mobile-only "tap to reveal" hint — pinned to the top of the overlay,
-       independent of the centred views/likes stats below it. Hidden on
-       desktop: hover already implies interactivity there, and "tap"
-       specifically doesn't apply to a mouse.                            */
+    /* "tap/hover to reveal" hint — pinned to the top of the overlay,
+       independent of the centred views/likes stats below it. The icon
+       and position stay identical at every width; only the wording
+       swaps, between two text spans toggled by the rule just below. */
     .yt-tap-hint {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      position: absolute;
+      top: 42px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.6);
+      animation: yt-tap-hint-pulse 2.4s ease-in-out infinite;
+    }
+
+    .yt-tap-hint svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+    }
+
+    .yt-tap-hint-text--mouse {
       display: none;
     }
 
-    @media (max-width: 576px) {
-      .yt-tap-hint {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        position: absolute;
-        top: 42px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-family: var(--mono);
-        font-size: 10px;
-        font-weight: 600;
-        letter-spacing: 1.2px;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.6);
-        animation: yt-tap-hint-pulse 2.4s ease-in-out infinite;
+    @media (min-width: 577px) {
+      .yt-tap-hint-text--touch {
+        display: none;
       }
 
-      .yt-tap-hint svg {
-        width: 13px;
-        height: 13px;
-        flex-shrink: 0;
+      .yt-tap-hint-text--mouse {
+        display: inline;
       }
     }
 
@@ -2620,7 +2628,7 @@
       }
     }
 
-    @media (max-width: 576px) and (prefers-reduced-motion: reduce) {
+    @media (prefers-reduced-motion: reduce) {
       .yt-tap-hint {
         animation: none;
         opacity: 0.8;
@@ -2637,7 +2645,7 @@
       flex-direction: column;
       align-items: center;
       gap: 5px;
-      padding: 18px 0;
+      padding: 20px 0;
     }
 
     /* views number: orange highlight; likes stays white.
@@ -2650,7 +2658,7 @@
 
     .ov-val {
       font-family: var(--nums);
-      font-size: clamp(24px, 7vw, 36px);
+      font-size: clamp(30px, 8vw, 44px);
       font-weight: 700;
       color: var(--white);
       letter-spacing: -1px;
@@ -2659,7 +2667,7 @@
 
     .ov-lbl {
       font-family: var(--mono);
-      font-size: 9px;
+      font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
       color: rgba(255, 255, 255, 0.45);
@@ -2667,7 +2675,7 @@
 
     /* horizontal divider for vertical stack */
     .ov-divider {
-      width: 56px;
+      width: 64px;
       height: 1px;
       flex-shrink: 0;
       background: rgba(255, 255, 255, 0.18);
@@ -2706,19 +2714,19 @@
     /* 2-col (≤960px): cards are wider, scale numbers up */
     @media (max-width: 960px) {
       .ov-val {
-        font-size: clamp(28px, 8vw, 44px);
+        font-size: clamp(34px, 9vw, 52px);
       }
 
       .ov-divider {
-        width: 72px;
+        width: 80px;
       }
 
       .ov-stat {
-        padding: 22px 0;
+        padding: 26px 0;
       }
 
       .ov-lbl {
-        font-size: 10px;
+        font-size: 11px;
       }
     }
 
@@ -3999,7 +4007,7 @@
                       <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
                       <circle cx="12" cy="12" r="6.5" opacity="0.55" />
                       <circle cx="12" cy="12" r="10.5" opacity="0.25" />
-                    </svg>Tap to reveal</div>
+                    </svg><span class="yt-tap-hint-text--touch">Tap to reveal</span><span class="yt-tap-hint-text--mouse">Hover to reveal</span></div>
                   <div class="ov-stat ov-stat--views">
                     <div class="ov-val">18.4M</div>
                     <div class="ov-lbl">views</div>
@@ -4051,7 +4059,7 @@
                       <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
                       <circle cx="12" cy="12" r="6.5" opacity="0.55" />
                       <circle cx="12" cy="12" r="10.5" opacity="0.25" />
-                    </svg>Tap to reveal</div>
+                    </svg><span class="yt-tap-hint-text--touch">Tap to reveal</span><span class="yt-tap-hint-text--mouse">Hover to reveal</span></div>
                   <div class="ov-stat ov-stat--views">
                     <div class="ov-val">16.1M</div>
                     <div class="ov-lbl">views</div>
@@ -4103,7 +4111,7 @@
                       <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
                       <circle cx="12" cy="12" r="6.5" opacity="0.55" />
                       <circle cx="12" cy="12" r="10.5" opacity="0.25" />
-                    </svg>Tap to reveal</div>
+                    </svg><span class="yt-tap-hint-text--touch">Tap to reveal</span><span class="yt-tap-hint-text--mouse">Hover to reveal</span></div>
                   <div class="ov-stat ov-stat--views">
                     <div class="ov-val">14.3M</div>
                     <div class="ov-lbl">views</div>
@@ -4155,7 +4163,7 @@
                       <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
                       <circle cx="12" cy="12" r="6.5" opacity="0.55" />
                       <circle cx="12" cy="12" r="10.5" opacity="0.25" />
-                    </svg>Tap to reveal</div>
+                    </svg><span class="yt-tap-hint-text--touch">Tap to reveal</span><span class="yt-tap-hint-text--mouse">Hover to reveal</span></div>
                   <div class="ov-stat ov-stat--views">
                     <div class="ov-val">6.8M</div>
                     <div class="ov-lbl">views</div>
@@ -4207,7 +4215,7 @@
                       <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
                       <circle cx="12" cy="12" r="6.5" opacity="0.55" />
                       <circle cx="12" cy="12" r="10.5" opacity="0.25" />
-                    </svg>Tap to reveal</div>
+                    </svg><span class="yt-tap-hint-text--touch">Tap to reveal</span><span class="yt-tap-hint-text--mouse">Hover to reveal</span></div>
                   <div class="ov-stat ov-stat--views">
                     <div class="ov-val">5.7M</div>
                     <div class="ov-lbl">views</div>
@@ -4259,7 +4267,7 @@
                       <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
                       <circle cx="12" cy="12" r="6.5" opacity="0.55" />
                       <circle cx="12" cy="12" r="10.5" opacity="0.25" />
-                    </svg>Tap to reveal</div>
+                    </svg><span class="yt-tap-hint-text--touch">Tap to reveal</span><span class="yt-tap-hint-text--mouse">Hover to reveal</span></div>
                   <div class="ov-stat ov-stat--views">
                     <div class="ov-val">4.6M</div>
                     <div class="ov-lbl">views</div>
@@ -4311,7 +4319,7 @@
                       <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
                       <circle cx="12" cy="12" r="6.5" opacity="0.55" />
                       <circle cx="12" cy="12" r="10.5" opacity="0.25" />
-                    </svg>Tap to reveal</div>
+                    </svg><span class="yt-tap-hint-text--touch">Tap to reveal</span><span class="yt-tap-hint-text--mouse">Hover to reveal</span></div>
                   <div class="ov-stat ov-stat--views">
                     <div class="ov-val">4M</div>
                     <div class="ov-lbl">views</div>
@@ -4363,7 +4371,7 @@
                       <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
                       <circle cx="12" cy="12" r="6.5" opacity="0.55" />
                       <circle cx="12" cy="12" r="10.5" opacity="0.25" />
-                    </svg>Tap to reveal</div>
+                    </svg><span class="yt-tap-hint-text--touch">Tap to reveal</span><span class="yt-tap-hint-text--mouse">Hover to reveal</span></div>
                   <div class="ov-stat ov-stat--views">
                     <div class="ov-val">3.1M</div>
                     <div class="ov-lbl">views</div>
@@ -5588,7 +5596,14 @@
          empty cutout layer hidden.
          ───────────────────────────────────────────────────────────────── */
       (function checkHeroCutout() {
-        if (window.innerWidth > 576) return;
+        /* deliberately NOT gated on window.innerWidth here — the fallback
+           CSS below is already scoped to @media(max-width:576px), so this
+           has zero visual effect while at desktop width. Gating this test
+           on viewport width was the actual bug: it meant loading the page
+           at desktop width and LATER resizing into mobile would skip the
+           check entirely, since it only ever ran once at script execution
+           time. Testing unconditionally means the fallback class (if
+           needed) is already in place before any resize ever happens. */
         var hero = document.getElementById('hero');
         if (!hero) return;
         var test = new Image();
