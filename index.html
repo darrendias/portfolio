@@ -4,12 +4,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <link rel="icon" type="image/png" sizes="64x64"
-    href="data:image/png;base64,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">
   <link rel="icon" type="image/png" sizes="64x64" href="favicon-64.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
   <title>Darren Dias</title>
   <meta name="description"
     content="hey! i'm Darren. i help businesses that have something to say, but struggle to say it." />
+
+  <!-- Open Graph / Twitter Card — controls how this page looks when shared
+       on LinkedIn, X, Slack, WhatsApp, etc. og:url assumes GitHub Pages at
+       the root (darrendias.github.io) based on earlier context — update
+       this if the actual deployed domain differs. og-image.jpg is a
+       placeholder filename; upload the real 1200x630 preview image under
+       this exact name alongside the HTML, or update the filename here to
+       match whatever you actually call it. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://darrendias.github.io/" />
+  <meta property="og:site_name" content="Darren Dias" />
+  <meta property="og:title" content="Darren Dias — Content Strategist & AI Builder" />
+  <meta property="og:description"
+    content="hey! i'm Darren. i help businesses that have something to say, but struggle to say it." />
+  <meta property="og:image" content="https://darrendias.github.io/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Darren Dias — Content Strategist & AI Builder" />
+  <meta name="twitter:description"
+    content="hey! i'm Darren. i help businesses that have something to say, but struggle to say it." />
+  <meta name="twitter:image" content="https://darrendias.github.io/og-image.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -3807,10 +3828,10 @@
 
         <!-- top-left: name + role -->
         <div class="hero-ov-tl">
-          <div class="hero-ov-name">
+          <h1 class="hero-ov-name">
             <span class="hero-ov-n1">DARREN</span>
             <span class="hero-ov-n2">DIAS</span>
-          </div>
+          </h1>
           <div class="hero-ov-meta">
             <p class="hero-ov-role">Content Strategist · AI Builder</p>
             <p class="hero-ov-year">PORTFOLIO · 2026</p>
@@ -3926,7 +3947,7 @@
       <!-- strip A · stats · -2.5° · scrolls left -->
       <div class="ticker-strip ticker-strip--a">
         <div class="ticker-track">
-          <span class="ticker-item"><span class="ticker-n">100M+</span> organic views <span
+          <span class="ticker-item"><span class="ticker-n">130M+</span> organic views <span
               class="ticker-sep">·</span></span>
           <span class="ticker-item"><span class="ticker-n">70K+</span> YouTube subscribers <span
               class="ticker-sep">·</span></span>
@@ -3939,7 +3960,7 @@
           <span class="ticker-item"><span class="ticker-n">zero</span> paid spend <span
               class="ticker-sep">·</span></span>
           <!-- duplicate set for seamless loop -->
-          <span class="ticker-item"><span class="ticker-n">100M+</span> organic views <span
+          <span class="ticker-item"><span class="ticker-n">130M+</span> organic views <span
               class="ticker-sep">·</span></span>
           <span class="ticker-item"><span class="ticker-n">70K+</span> YouTube subscribers <span
               class="ticker-sep">·</span></span>
@@ -4535,14 +4556,14 @@
           <article class="work-card reveal d1">
             <h3 class="work-title">YouTube at scale</h3>
             <p class="work-org">Study Abroad Sector</p>
-            <p class="work-desc">The brief was 'make videos that generate revenue.' So I worked out why people watch at 2am, what they search before telling anyone, what actually earns a share, and what would make our clients 'Buy Now', not 'Add to Cart'. 100M views later, the budget was still zero. Paid marketing departments hate this trick.</p>
+            <p class="work-desc">The brief was 'make videos that generate revenue.' So I worked out why people watch at 2am, what they search before telling anyone, what actually earns a share, and what would make our clients 'Buy Now', not 'Add to Cart'. 130M views later, the budget was still zero. Paid marketing departments hate this trick.</p>
             <div class="work-nums">
               <div>
                 <div class="wn-val">70K+</div>
                 <div class="wn-lbl">Subscribers</div>
               </div>
               <div>
-                <div class="wn-val">100M+</div>
+                <div class="wn-val">130M+</div>
                 <div class="wn-lbl">Organic Views</div>
               </div>
             </div>
