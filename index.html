@@ -2129,7 +2129,8 @@
         position: sticky;
         top: 0;
         height: 100vh;
-        padding: 0;
+        padding: 52px 0 0;
+        align-items: flex-start;
       }
     }
 
@@ -3379,6 +3380,20 @@
       .cl {
         gap: 14px;
       }
+
+      /* cl-val text (URLs, handles) can wrap at / and @ characters in Mobile
+         Safari — making cl-val 2 lines tall and cl-type appear misaligned.
+         white-space:nowrap stops that; min-width:0 lets the flex item shrink
+         below its intrinsic content size so it fits in the available space;
+         overflow:hidden + text-overflow:ellipsis handle any remaining overflow. */
+      .cl-val {
+        font-size: 13px;
+        letter-spacing: 0;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
 
     /* footer: 60px side padding at 640–768px tablet while wrap uses
@@ -4478,7 +4493,7 @@
         <div class="yt-block">
           <div class="yt-block-hd reveal">
             <span class="yt-pill">Thumbnail design</span>
-            <span class="yt-pill-sub">Long-form · YouTube Videos</span>
+            <span class="yt-pill-sub">Long-form · YouTube</span>
           </div>
           <div class="yt-long-grid">
             <div class="yt-card reveal d1">
