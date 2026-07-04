@@ -91,6 +91,7 @@
       --black: #0C0C0C;
       --white: #FFFFFF;
       --orange: #FF5520;
+      --orange-rgb: 255, 85, 32;
       --gray-bg: #F5F5F5;
       --gray-ln: #E8E8E8;
       --gray-md: #AAAAAA;
@@ -120,37 +121,72 @@
       }
     }
 
-    /* ── cursor ── */
-    .cursor {
-      width: 10px;
-      height: 10px;
-      background: var(--orange);
-      border-radius: 50%;
+    /* ── cursor — dot + trailing ring, orange-tinted ── */
+    @media (hover: hover) and (pointer: fine) {
+      html.dd-cursor-on,
+      html.dd-cursor-on * {
+        cursor: none !important;
+      }
+    }
+
+    .dd-cursor-dot,
+    .dd-cursor-ring {
       position: fixed;
       top: 0;
       left: 0;
       pointer-events: none;
       z-index: 99999;
-      transform: translate(-50%, -50%);
-      transition: width .18s var(--ease), height .18s var(--ease),
-        background .18s, border .18s;
+      border-radius: 50%;
+      opacity: 0;
+      will-change: transform;
     }
 
-    .cursor.grow {
-      width: 30px;
-      height: 30px;
-      background: transparent;
-      border: 1.5px solid var(--orange);
+    .dd-cursor-dot.is-visible,
+    .dd-cursor-ring.is-visible {
+      opacity: 1;
     }
 
-    .cursor.grow.on-fill {
-      border-color: var(--black);
+    .dd-cursor-dot.is-leaving,
+    .dd-cursor-ring.is-leaving {
+      opacity: 0;
     }
 
-    @media (hover: none) {
-      .cursor {
-        display: none;
-      }
+    .dd-cursor-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--orange);
+      transition: opacity .2s;
+    }
+
+    .dd-cursor-ring {
+      width: 34px;
+      height: 34px;
+      border: 1.5px solid rgba(var(--orange-rgb), 0.55);
+      box-shadow: 0 0 16px rgba(var(--orange-rgb), 0.22);
+      transition: width .3s cubic-bezier(.34, 1.56, .64, 1),
+        height .3s cubic-bezier(.34, 1.56, .64, 1),
+        background .3s, border-color .3s, box-shadow .3s, opacity .2s;
+    }
+
+    .dd-cursor-ring.is-active {
+      width: 52px;
+      height: 52px;
+      background: rgba(var(--orange-rgb), 0.1);
+      border-color: rgba(var(--orange-rgb), 0.85);
+      box-shadow: 0 0 26px rgba(var(--orange-rgb), 0.35);
+    }
+
+    .dd-cursor-ring.is-pressed {
+      width: 26px;
+      height: 26px;
+    }
+
+    /* inside the hero portrait area the wavy reveal ring SVG is the visual
+       cursor indicator — hide the orange dot + ring so they don't compete   */
+    .dd-cursor-dot.hero-hidden,
+    .dd-cursor-ring.hero-hidden {
+      opacity: 0;
+      transition: opacity .15s ease;
     }
 
     /* ── scroll bar ── */
@@ -3627,7 +3663,6 @@
     })();
   </script>
   <!-- ══ END PRELOADER ══════════════════════════════════════════════════ -->
-  <div class="cursor" id="cur" aria-hidden="true"></div>
   <div id="prog" aria-hidden="true"></div>
 
   <!-- nav -->
@@ -4801,51 +4836,103 @@
   </footer>
 
   <script>
-    /* cursor + magnetism */
-    const cur = document.getElementById('cur');
-    if (cur) {
-      /* Pre-cache magnet target rects; refresh on scroll/resize */
-      var _magRects = [];
-      function _cacheMag() {
-        _magRects = Array.from(
-          document.querySelectorAll('#magBtn, .nav-cta, .pill-btn')
-        ).map(el => el.getBoundingClientRect());
+    /* ── cursor ── */
+    (function initPremiumCursor() {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+      document.documentElement.classList.add('dd-cursor-on');
+      document.documentElement.style.setProperty('cursor', 'none', 'important');
+      document.body.style.setProperty('cursor', 'none', 'important');
+
+      var dot = document.createElement('div');
+      dot.className = 'dd-cursor-dot';
+      var ring = document.createElement('div');
+      ring.className = 'dd-cursor-ring';
+      document.body.appendChild(dot);
+      document.body.appendChild(ring);
+
+      var mx = 0, my = 0, rx = 0, ry = 0, hasMoved = false;
+      var interactiveSel = 'a, button, input, select, textarea, label, summary, [role="button"], [onclick]';
+
+      function placeDot() {
+        dot.style.transform = 'translate(' + mx + 'px, ' + my + 'px) translate(-50%, -50%)';
       }
-      _cacheMag();
-      window.addEventListener('scroll', _cacheMag, { passive: true });
-      window.addEventListener('resize', _cacheMag, { passive: true });
 
-      const MAG_R = 100, MAG_PULL = 0.25;
+      function syncActiveState() {
+        if (!hasMoved) return;
+        var el = document.elementFromPoint(mx, my);
+        if (el && el.closest(interactiveSel)) {
+          ring.classList.add('is-active');
+        } else {
+          ring.classList.remove('is-active');
+        }
+      }
 
-      document.addEventListener('mousemove', e => {
-        var mx = e.clientX, my = e.clientY;
-        var cx = mx, cy = my;
-        /* apply weighted pull toward each magnet target */
-        _magRects.forEach(r => {
-          if (!r.width) return;
-          var ex = r.left + r.width / 2;
-          var ey = r.top + r.height / 2;
-          var dx = mx - ex, dy = my - ey;
-          var dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < MAG_R && dist > 0) {
-            var s = (1 - dist / MAG_R) * MAG_PULL;
-            cx -= dx * s;
-            cy -= dy * s;
-          }
-        });
-        cur.style.left = cx + 'px';
-        cur.style.top = cy + 'px';
+      window.addEventListener('mousemove', function (e) {
+        mx = e.clientX;
+        my = e.clientY;
+        if (!hasMoved) {
+          hasMoved = true;
+          rx = mx;
+          ry = my;
+          dot.classList.add('is-visible');
+          ring.classList.add('is-visible');
+        }
+        placeDot();
       }, { passive: true });
 
-      document.querySelectorAll('a, button, .yt-frame').forEach(el => {
-        el.addEventListener('mouseenter', () => cur.classList.add('grow'));
-        el.addEventListener('mouseleave', () => cur.classList.remove('grow'));
+      (function tick() {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        ring.style.transform = 'translate(' + rx + 'px, ' + ry + 'px) translate(-50%, -50%)';
+        requestAnimationFrame(tick);
+      })();
+
+      document.addEventListener('mouseover', function (e) {
+        if (e.target.closest(interactiveSel)) ring.classList.add('is-active');
       });
-      document.querySelectorAll('.nav-cta').forEach(el => {
-        el.addEventListener('mouseenter', () => cur.classList.add('on-fill'));
-        el.addEventListener('mouseleave', () => cur.classList.remove('on-fill'));
+      document.addEventListener('mouseout', function (e) {
+        if (e.target.closest(interactiveSel)) ring.classList.remove('is-active');
       });
-    }
+      document.addEventListener('mousedown', function () { ring.classList.add('is-pressed'); });
+      document.addEventListener('mouseup', function () { ring.classList.remove('is-pressed'); });
+
+      document.addEventListener('mouseleave', function () {
+        dot.classList.add('is-leaving');
+        ring.classList.add('is-leaving');
+      });
+      document.addEventListener('mouseenter', function () {
+        dot.classList.remove('is-leaving');
+        ring.classList.remove('is-leaving');
+      });
+
+      /* hide cursor only when the reveal ring is actually active over the
+         portrait — watch for is-hovering on #heroRevealOuter, which
+         initHeroReveal toggles via its own precise inBounds geometry check.
+         #heroRevealOuter itself has inset:0 so mouseenter fires for the
+         entire hero section; is-hovering is the correct, tighter signal.   */
+      var heroReveal = document.getElementById('heroRevealOuter');
+      if (heroReveal) {
+        new MutationObserver(function () {
+          var active = heroReveal.classList.contains('is-hovering');
+          dot.classList.toggle('hero-hidden', active);
+          ring.classList.toggle('hero-hidden', active);
+        }).observe(heroReveal, { attributes: true, attributeFilter: ['class'] });
+      }
+
+      /* re-assert cursor:none and sync ring state after any DOM mutation
+         (e.g. innerHTML swap replacing the element under the cursor)     */
+      var resyncTimer = null;
+      new MutationObserver(function () {
+        document.documentElement.style.setProperty('cursor', 'none', 'important');
+        document.body.style.setProperty('cursor', 'none', 'important');
+        if (resyncTimer) return;
+        resyncTimer = requestAnimationFrame(function () {
+          syncActiveState();
+          resyncTimer = null;
+        });
+      }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled'] });
+    })();
 
     /* scroll progress + nav */
     const prog = document.getElementById('prog');
