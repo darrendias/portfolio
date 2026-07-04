@@ -2134,6 +2134,15 @@
       }
     }
 
+    /* tools h2: desktop shows 2 lines (break after "build"), mobile shows
+       3 lines (breaks after "who" and "AI") — controlled via toggled spans */
+    .tools-h2-mob { display: none; }
+
+    @media (max-width: 560px) {
+      .tools-h2-mob { display: inline; }
+      .tools-h2-desk { display: none; }
+    }
+
     /* ── work ── */
     #work {
       padding: 120px 0;
@@ -3157,6 +3166,14 @@
       margin-bottom: 8px;
     }
 
+    /* the "#1" in the Analytical Thinking award title — switched to the
+       nums font (Space Grotesk) so the digit reads as a proper numeral
+       rather than the display typeface's more stylised glyph            */
+    .award-num {
+      font-family: var(--nums);
+      font-weight: 700;
+    }
+
     .award-body {
       font-size: 14px;
       color: var(--gray-tx);
@@ -3377,8 +3394,20 @@
 
     /* contact: reduce cl gap on narrow phones so long values have room */
     @media (max-width: 480px) {
+      /* reduce side padding so contact links use more of the screen width */
+      #contact .wrap {
+        padding: 0 16px;
+      }
+
       .cl {
         gap: 14px;
+        width: 100%;
+      }
+
+      /* tighter type label so cl-val gets more horizontal room */
+      .cl-type {
+        min-width: 60px;
+        flex-shrink: 0;
       }
 
       /* cl-val text (URLs, handles) can wrap at / and @ characters in Mobile
@@ -3387,7 +3416,7 @@
          below its intrinsic content size so it fits in the available space;
          overflow:hidden + text-overflow:ellipsis handle any remaining overflow. */
       .cl-val {
-        font-size: 13px;
+        font-size: 15px;
         letter-spacing: 0;
         min-width: 0;
         white-space: nowrap;
@@ -3909,7 +3938,7 @@
           <div class="imp-card">
             <div class="imp-big">£<span class="counter" data-target="520" data-suffix="K">0K</span></div>
             <div class="imp-label">Content-Driven Revenue</div>
-            <div class="imp-ctx">In study fees</div>
+            <div class="imp-ctx">Data-driven decisions</div>
           </div>
           <div class="imp-card">
             <div class="imp-big"><span class="counter" data-target="30" data-suffix="+">0+</span></div>
@@ -4643,7 +4672,7 @@
       <div class="wrap">
         <div class="sec-head">
           <span class="sec-label reveal">05 / AI tools</span>
-          <h2 class="sec-h2 reveal d1">Marketers who build<br>tools with AI are rare.</h2>
+          <h2 class="sec-h2 reveal d1">Marketers who<span class="tools-h2-mob"><br></span> build<span class="tools-h2-desk"><br></span>tools with AI<span class="tools-h2-mob"><br></span> are rare.</h2>
           <p class="tools-sub reveal d2">Four tools, one week, no team. The AI features are paused because tokens are expensive, but the tools are live to test for free.</p>
         </div>
         <div class="tools-grid">
@@ -4721,7 +4750,7 @@
           <div class="award reveal d1">
             <div class="award-ico">#<span class="ico-digit">1</span></div>
             <div>
-              <div class="award-title">#1 for Analytical Thinking and Aptitude</div>
+              <div class="award-title"><span class="award-num">#1</span> for Analytical Thinking and Aptitude</div>
               <div class="award-body">Ranked #1 in the country for Analytical Thinking and Aptitude. Also topped the State-level and Regional-level preliminary rounds. No brief or preparation, just brain versus problem, and the problem lost.</div>
             </div>
           </div>
