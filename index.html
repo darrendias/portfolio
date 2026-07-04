@@ -3498,7 +3498,10 @@
       top: 50%;
       margin-left: -3px;
       margin-top: -3px;
-      will-change: transform, opacity;
+      /* no will-change here — promoting 350+ elements to individual GPU
+         compositing layers was the actual performance problem. Transform
+         animations still work without it; browsers handle small elements
+         in shared layers far more efficiently.                          */
     }
 
     /* ── preloader ── */
@@ -5372,13 +5375,25 @@
 
     /* magnetic particle button */
     (function () {
-      const N = 350;
+      const hero = document.querySelector('#hero');
+      if (!hero) return;
       const btn = document.getElementById('magBtn');
       const lbl = document.getElementById('btnLabel');
       if (!btn || !lbl) return;
+
+      /* All dots are DOM particles so every one responds to the hover
+         magnet. A canvas was tried for coverage but painted pixels can
+         never be individually animated on hover.
+         N scales with viewport area (sqrt, not linear) so density is
+         consistent at any width. Without will-change on .particle, 
+         350-500 DOM elements share GPU layers and stay lightweight.  */
+      const heroArea = hero.offsetWidth * hero.offsetHeight;
+      const N = Math.min(
+        Math.round(350 * Math.sqrt(heroArea / (375 * 667))),
+        500
+      );
       btn.style.minWidth = btn.offsetWidth + 'px';
 
-      const hero = btn.closest('#hero');
       const particleField = document.createElement('div');
       particleField.id = 'particleField';
       particleField.style.position = 'absolute';
@@ -5408,6 +5423,13 @@
       }
 
       const DEG = Math.PI / 180;
+      /* spread scales with actual hero width so particles always reach the
+         far side of the viewport — the button is at bottom-right, so the
+         left half of the hero is the far side. The fixed 1400px was correct
+         for mobile/tablet but insufficient on wide desktops where the button
+         can sit 800-900px right of the hero centre. Math.max preserves the
+         existing behaviour on small screens exactly.                        */
+      const spread = Math.max(1400, hero.offsetWidth * 0.95);
       const particles = [];
       const initialCenter = getBtnCenterOffset();
 
@@ -5418,7 +5440,7 @@
 
         const raw = dr() * 220 * DEG;
         const a = raw + 110 * DEG;
-        const d = 80 + Math.sqrt((i + dr() * 0.9) / N) * 1400;
+        const d = 80 + Math.sqrt((i + dr() * 0.9) / N) * spread;
 
         const ox = initialCenter.x + Math.cos(a) * d;
         const oy = initialCenter.y + Math.sin(a) * d;
