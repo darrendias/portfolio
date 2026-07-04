@@ -2091,8 +2091,25 @@
         display: none;
       }
 
+      /* reduce space between sec-label and story-h2 */
+      #story .sec-label {
+        margin-bottom: 10px;
+      }
+
       .story-h2 {
-        margin-bottom: 28px;
+        margin-top: 0;
+        margin-bottom: 18px;
+      }
+
+      /* reduce grid gap — the 48px carried over from the ≤900px breakpoint
+         is the main culprit; it sits between the h2 and the timeline      */
+      .story-grid {
+        gap: 28px;
+      }
+
+      /* tighten timeline row spacing so all 5 rows fit without overflow    */
+      .tl-row {
+        padding-bottom: 26px;
       }
 
       .story-grid>div:last-child {
