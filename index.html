@@ -530,6 +530,12 @@
         -webkit-touch-callout: none;
         user-select: none;
       }
+
+      /* icon-only on mobile: explicitly centre the icon within the button
+         rather than relying on equal padding to do it accidentally           */
+      .pill-btn {
+        justify-content: center;
+      }
     }
 
     /* very narrow screens: compress further */
@@ -4935,10 +4941,19 @@
 
       /* position indicator + trigger landing flash on each move */
       function moveInd(btn) {
-        const wR = wrap.getBoundingClientRect();
-        const bR = btn.getBoundingClientRect();
-        ind.style.width = bR.width + 'px';
-        ind.style.transform = 'translateX(' + (bR.left - wR.left - 4) + 'px)';
+        /* Use offsetWidth / offsetLeft (local pre-transform coords) rather
+           than getBoundingClientRect() (visual post-transform coords).
+           #pill-nav carries a CSS scale() on mobile; getBoundingClientRect()
+           already bakes that scale in, so using those values as CSS properties
+           double-applies the scale → indicator wrong width AND wrong position.
+           offsetWidth/offsetLeft are in the element's own layout space and
+           match the CSS coordinate system exactly, regardless of any ancestor
+           transform.                                                          */
+        ind.style.width = btn.offsetWidth + 'px';
+        /* -5 = wrap border-left (1px) + indicator CSS left (4px).
+           left:4px is from the padding edge; offsetLeft is from the border
+           edge; the 1px border bridges that gap.                             */
+        ind.style.transform = 'translateX(' + (btn.offsetLeft - 5) + 'px)';
         /* remove → reflow → re-add restarts the animation cleanly each time */
         ind.classList.remove('ind-land');
         void ind.offsetWidth;
